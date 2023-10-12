@@ -90,12 +90,6 @@ public class PlayerMovement : MonoBehaviour
     {
         canMove = state;
     }
-
-    public void CanMove(bool state)
-    {
-        canMove = state;
-    }
-
     public void SetCanClimb(bool state, bool isdownside, bool isupside)
     {
         if (!state)
