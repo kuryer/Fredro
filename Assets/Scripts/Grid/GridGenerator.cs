@@ -4,11 +4,11 @@ using UnityEngine;
 public class GridGenerator : MonoBehaviour
 {
 
-    List<Tile> InvalidTiles;
-    List<Tile> ValidTiles;
+    [SerializeField] List<Tile> InvalidTiles;
+    [SerializeField] List<Tile> ValidTiles;
 
     [SerializeField] Vector2 possibleHolesAmount;
-    int actualHolesAmount;
+    [SerializeField] int actualHolesAmount;
 
 
     [SerializeField] int levelsAmountToAddHole;
@@ -17,14 +17,23 @@ public class GridGenerator : MonoBehaviour
     [SerializeField] List<GameObject> LadderPlaces_2;
     [SerializeField] List<GameObject> LadderPlaces_3;
 
-    [SerializeField] GameObject Ladder_1;
-    [SerializeField] GameObject Ladder_2;
-    [SerializeField] GameObject Ladder_3;
+    GameObject Ladder_1;
+    GameObject Ladder_2;
+    GameObject Ladder_3;
 
     [SerializeField] GameObject LadderPrefab;
     void Start()
     {
-        
+        GenerateGrid();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            DeleteGrid();
+            GenerateGrid();
+        }
     }
 
     public void GenerateGrid()
@@ -51,9 +60,12 @@ public class GridGenerator : MonoBehaviour
                     holesIndexAndTile.Add(i, newTileIndex);
                     lastTileIndex = newTileIndex;
                     holesLeft--;
+                    if(holesLeft <= 0)
+                        return holesIndexAndTile;
                 }
             }
         }
+        Debug.Log(holesIndexAndTile.Keys);
         return holesIndexAndTile;
     }
 
@@ -71,7 +83,7 @@ public class GridGenerator : MonoBehaviour
         {
             tile.ChangeToWallTile();
         }
-        for(int i = 0; ValidTiles.Count - 1 > i; i++)
+        for(int i = 0; ValidTiles.Count > i; i++)
         {
             if (!holes.ContainsKey(i))
                 ValidTiles[i].ChangeToWallTile();
@@ -79,28 +91,39 @@ public class GridGenerator : MonoBehaviour
     }
     void GenerateLadders()
     {
-        GenerateLadders_1();
-        GenerateLadders_2();
-        GenerateLadders_3();
+        int ladder1 = GenerateLadders_1();
+        int ladder2 = GenerateLadders_2(ladder1);
+        GenerateLadders_3(ladder2);
     }
 
-    void GenerateLadders_1()
+    int GenerateLadders_1()
     {
         int place = Random.Range(0, LadderPlaces_1.Count);
         Vector3 placing = LadderPlaces_1[place].transform.position;
         Ladder_1 = Instantiate(LadderPrefab, placing, Quaternion.identity);
+        return place;
     }
-    void GenerateLadders_2()
+    int GenerateLadders_2(int previousPlace)
     {
-        int place = Random.Range(0, LadderPlaces_2.Count);
+        int place = -1;
+        while (place < 0 || place == previousPlace)
+        {
+            place = Random.Range(0, LadderPlaces_2.Count);
+        }
         Vector3 placing = LadderPlaces_2[place].transform.position;
         Ladder_2 = Instantiate(LadderPrefab, placing, Quaternion.identity);
+        return place;
     }
-    void GenerateLadders_3()
+    int GenerateLadders_3(int previousPlace)
     {
-        int place = Random.Range(0, LadderPlaces_3.Count);
+        int place = -1;
+        while (place < 0 || place == previousPlace)
+        {
+            place = Random.Range(0, LadderPlaces_3.Count);
+        }
         Vector3 placing = LadderPlaces_3[place].transform.position;
         Ladder_3 = Instantiate(LadderPrefab, placing, Quaternion.identity);
+        return place;
     }
 
     public void DeleteGrid()

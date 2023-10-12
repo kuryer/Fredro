@@ -6,9 +6,12 @@ public class Tile : MonoBehaviour
     [SerializeField] List<Sprite> WallTiles;
     [SerializeField] List<Sprite> HoleTiles;
     [SerializeField] bool isHole;
-    void Start()
+
+    SpriteRenderer spriteRenderer;
+
+    void Awake()
     {
-        
+        spriteRenderer = GetComponent<SpriteRenderer>();  
     }
 
     // Update is called once per frame
@@ -19,24 +22,56 @@ public class Tile : MonoBehaviour
 
     public void ChangeToWallTile()
     {
-
+        int index = Random.Range(0, WallTiles.Count);
+        spriteRenderer.sprite = WallTiles[index];
     }
 
     public int ChangeToHoleTile(int holeIndex)
     {
-        //must return index of the used hole
-        return 0;
+        int index = Random.Range(0, HoleTiles.Count);
+        spriteRenderer.sprite = HoleTiles[index];
+        isHole = true;
+        return index;
     }
 
     public void ClearTile()
     {
-        //set ishole na false
-        //set sprite to empty
+        isHole = false;
+        spriteRenderer.sprite = null;
     }
 
     public void RepairTile()
     {
-        //change sprite to randomFixedWall
+        isHole = false;
+        ChangeToWallTile();
         //send info to level script
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (!isHole)
+            return;
+
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            collision.TryGetComponent<PlayerRepair>(out PlayerRepair playerRepair);
+            {
+                playerRepair.SetCanRepairTile(this, true);
+            }
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (!isHole)
+            return;
+
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            collision.TryGetComponent<PlayerRepair>(out PlayerRepair playerRepair);
+            {
+                playerRepair.SetCanRepairTile(this, false);
+            }
+        }
     }
 }

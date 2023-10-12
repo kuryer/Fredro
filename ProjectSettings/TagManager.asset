@@ -3,16 +3,17 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Prop
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Ground
   - Water
   - UI
-  - 
-  - 
+  - Player
+  - Prop
   - 
   - 
   - 
@@ -40,4 +41,16 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Tile
+    uniqueID: 269487947
+    locked: 0
+  - name: Platform
+    uniqueID: 2724391221
+    locked: 0
+  - name: Character
+    uniqueID: 2190848391
+    locked: 0
+  - name: Prop
+    uniqueID: 207572949
     locked: 0
