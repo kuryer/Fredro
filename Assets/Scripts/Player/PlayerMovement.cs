@@ -33,7 +33,10 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Animations")]
     SpriteRenderer spriteRenderer;
+    Animator animator;
     private bool isFacingRight;
+    bool isHit = false;
+    private string currentState;
 
     public enum gravityState
     {
@@ -51,6 +54,7 @@ public class PlayerMovement : MonoBehaviour
         movement = BasicMovement;
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
         canMove = true;
     }
 
@@ -85,7 +89,10 @@ public class PlayerMovement : MonoBehaviour
             movement();
         CheckCollisions();
     }
-
+    public void SetIsHit(bool state)
+    {
+        isHit = state;
+    }
     public void SetCanMove(bool state)
     {
         canMove = state;
@@ -111,6 +118,11 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!canMove || isClimbing)
             return;
+
+        if (X != 0)
+            ChangeAnimationState("Player_Run");
+        else
+            ChangeAnimationState("Player_Idle");
 
         float maxSpeed = X * playerVars.movementSpeed;
 
@@ -188,6 +200,7 @@ public class PlayerMovement : MonoBehaviour
         return acc;
     }
 
+
     #region Raycast
 
     void CheckCollisions()
@@ -201,6 +214,19 @@ public class PlayerMovement : MonoBehaviour
     }
 
     #endregion
+
+    #region Hit
+
+    public void PlayerGotHit()
+    {
+        SetIsHit(true);
+        SetCanMove(false);
+        ChangeAnimationState("Player_Hit");
+    }
+
+
+    #endregion
+
 
     #region Animations
 
@@ -218,6 +244,14 @@ public class PlayerMovement : MonoBehaviour
             isFacingRight = true;
             spriteRenderer.flipX = false;
         }
+    }
+
+    public void ChangeAnimationState(string newState)
+    {
+        if (currentState == newState) return;
+
+        animator.Play(newState);
+        currentState = newState;
     }
 
     #endregion

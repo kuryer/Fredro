@@ -3,6 +3,7 @@ using UnityEngine;
 public class PropScript : MonoBehaviour
 {
     [SerializeField] bool isRotating;
+    bool canHit = true;
     [SerializeField] float propLength;
     [SerializeField] float rotationSpeed;
     void Update()
@@ -23,6 +24,14 @@ public class PropScript : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("dotkn¹³");
+        if (collision.gameObject.CompareTag("Player") && canHit)
+        {
+            collision.TryGetComponent<PlayerHealth>(out PlayerHealth Health);
+            {
+                Debug.Log("Elo");
+                Health.PlayerGotHit();
+                canHit = false;
+            }
+        }
     }
 }

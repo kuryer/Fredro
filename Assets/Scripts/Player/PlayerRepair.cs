@@ -22,7 +22,7 @@ public class PlayerRepair : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.E) && actualState == State.repairing)
         {
-            animator.Play("Player_Idle");
+            movementScript.ChangeAnimationState("Player_Idle");
             movementScript.SetCanMove(true);
             actualState = State.not;
         }
@@ -33,7 +33,7 @@ public class PlayerRepair : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E) && actualState == State.not)
         {
-            animator.Play("Player_Repairing");
+            movementScript.ChangeAnimationState("Player_Repairing");
             movementScript.SetCanMove(false);
             actualState = State.repairing;
         }
