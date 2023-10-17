@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b20e7d8181f272f4c858f65ef6ee27a2, type: 3}
   m_Name: Player Variables
   m_EditorClassIdentifier: 
-  movementSpeed: 70
-  climbingSpeed: 18.7
+  movementSpeed: 74
+  climbingSpeed: 0.6
   acceleration: 50
-  decceleration: 67
-  jumpForce: 850
+  decceleration: 90
+  jumpForce: 1400
   jumpCutMultiplier: 0.2
   jumpBuffer: 0.5
   generalGravity: 8

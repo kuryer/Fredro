@@ -9,25 +9,54 @@ public class Ladder : MonoBehaviour
     [SerializeField] Vector3 Distance;
     [SerializeField] LayerMask playerLayer;
     [SerializeField] float rayLength;
+    [SerializeField] bool isFinalLadder;
+    [SerializeField] bool isLevelDone;
     [SerializeField]bool isUpside;
     [SerializeField]bool isDownside;
+    bool isFinalizeCalled = false;  
     bool isInside;
     PlayerMovement playerMovement;
+    GameManager manager;
 
     private void Awake()
     {
+        isFinalLadder = false;
+        isLevelDone = false;
         var player = GameObject.FindGameObjectWithTag("Player");
         playerMovement = player.GetComponent<PlayerMovement>();
     }
 
+    private void Update()
+    {
+        if(isFinalLadder && isUpside && isLevelDone && !isFinalizeCalled)
+        {
+            manager.GoToNextLevel();
+            playerMovement.isInTransition = true;
+            isFinalizeCalled = true;
+        }
+    }
+
+    public void SetLevelDone()
+    {
+        isLevelDone = true;
+    }
+
+    public void SetFinalLadder()
+    {
+        isFinalLadder = true;
+        GameObject gameManagerObject = GameObject.FindGameObjectWithTag("Game Manager");
+        manager = gameManagerObject.GetComponent<GameManager>();
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (isFinalizeCalled && isFinalLadder)
+            return;
         if (collision.gameObject.CompareTag("Player"))
         {
             collision.TryGetComponent<PlayerMovement>(out PlayerMovement Movement);
             {
-                Debug.Log("Elo");
-                playerMovement.SetCanClimb(true, isDownside, isUpside);
+                playerMovement.SetCanClimb(true, isDownside, isUpside, IsFinalLadderBool());
                 isInside = true;
             }
         }
@@ -39,12 +68,20 @@ public class Ladder : MonoBehaviour
         {
             collision.TryGetComponent<PlayerMovement>(out PlayerMovement Movement);
             {
-                playerMovement.SetCanClimb(false, isDownside, isUpside);
+                playerMovement.SetCanClimb(false, isDownside, isUpside, IsFinalLadderBool());
                 isInside = false;
             }
-        }
+        }   
     }
 
+    bool IsFinalLadderBool()
+    {
+        if (!isFinalLadder)
+            return false;
+        if(isFinalLadder && !isLevelDone)
+            return true;
+        return false;
+    }
     private void FixedUpdate()
     {
         isDownside = Physics2D.Raycast(transform.position + Offset, Vector2.right, rayLength, playerLayer) ||

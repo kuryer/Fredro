@@ -14,12 +14,19 @@ public class PlayerRepair : MonoBehaviour
     State actualState;
     private void Awake()
     {
+        actualState = State.not;
         movementScript = GetComponent<PlayerMovement>();
         animator = GetComponent<Animator>();
     }
 
     private void Update()
     {
+        if(movementScript.isHit && actualState == State.repairing)
+        {
+            //movementScript.SetCanMove(true);
+            actualState = State.not;
+        }
+
         if (Input.GetKeyUp(KeyCode.E) && actualState == State.repairing)
         {
             movementScript.ChangeAnimationState("Player_Idle");
@@ -31,7 +38,7 @@ public class PlayerRepair : MonoBehaviour
             return;
 
 
-        if (Input.GetKeyDown(KeyCode.E) && actualState == State.not)
+        if (Input.GetKeyDown(KeyCode.E) && actualState == State.not && !movementScript.isHit)
         {
             movementScript.ChangeAnimationState("Player_Repairing");
             movementScript.SetCanMove(false);

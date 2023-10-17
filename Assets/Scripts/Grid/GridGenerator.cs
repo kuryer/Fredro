@@ -7,11 +7,8 @@ public class GridGenerator : MonoBehaviour
     [SerializeField] List<Tile> InvalidTiles;
     [SerializeField] List<Tile> ValidTiles;
 
-    [SerializeField] Vector2 possibleHolesAmount;
+    [SerializeField] int maxPossibleHolesAmount;
     [SerializeField] int actualHolesAmount;
-
-
-    [SerializeField] int levelsAmountToAddHole;
 
     [SerializeField] List<GameObject> LadderPlaces_1;
     [SerializeField] List<GameObject> LadderPlaces_2;
@@ -22,25 +19,21 @@ public class GridGenerator : MonoBehaviour
     GameObject Ladder_3;
 
     [SerializeField] GameObject LadderPrefab;
-    void Start()
-    {
-        GenerateGrid();
-    }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            DeleteGrid();
-            GenerateGrid();
-        }
-    }
+    [SerializeField] LevelManager levelManager;
+    [SerializeField] Score score;
 
-    public void GenerateGrid()
+    int holesToFix;
+
+    #region Grid Generation
+    public int GenerateGrid(int previousLevelLadder)
     {
         Dictionary<int, int> holes = FindHoles();
         Generate(holes);
-        GenerateLadders();
+        int lastLadderPlace = GenerateLadders(previousLevelLadder);
+        if(actualHolesAmount < maxPossibleHolesAmount)
+            actualHolesAmount++;
+        return lastLadderPlace;
     }
     Dictionary<int, int> FindHoles()
     {
@@ -56,7 +49,7 @@ public class GridGenerator : MonoBehaviour
                     continue;
                 if (IsHole())
                 {
-                    int newTileIndex = ValidTiles[i].ChangeToHoleTile(lastTileIndex);
+                    int newTileIndex = ValidTiles[i].ChangeToHoleTile(lastTileIndex, this);
                     holesIndexAndTile.Add(i, newTileIndex);
                     lastTileIndex = newTileIndex;
                     holesLeft--;
@@ -65,7 +58,6 @@ public class GridGenerator : MonoBehaviour
                 }
             }
         }
-        Debug.Log(holesIndexAndTile.Keys);
         return holesIndexAndTile;
     }
 
@@ -81,24 +73,29 @@ public class GridGenerator : MonoBehaviour
     {
         foreach(Tile tile in InvalidTiles)
         {
-            tile.ChangeToWallTile();
+            tile.ChangeToWallTile(this);
         }
         for(int i = 0; ValidTiles.Count > i; i++)
         {
             if (!holes.ContainsKey(i))
-                ValidTiles[i].ChangeToWallTile();
+                ValidTiles[i].ChangeToWallTile(this);
         }
+        holesToFix = actualHolesAmount;
     }
-    void GenerateLadders()
+    int GenerateLadders(int previousLevelPlace)
     {
-        int ladder1 = GenerateLadders_1();
+        int ladder1 = GenerateLadders_1(previousLevelPlace);
         int ladder2 = GenerateLadders_2(ladder1);
-        GenerateLadders_3(ladder2);
+        return GenerateLadders_3(ladder2);
     }
 
-    int GenerateLadders_1()
+    int GenerateLadders_1(int previousPlace)
     {
-        int place = Random.Range(0, LadderPlaces_1.Count);
+        int place = -1;
+        while (place < 0 || place == previousPlace)
+        {
+            place = Random.Range(0, LadderPlaces_1.Count);
+        }
         Vector3 placing = LadderPlaces_1[place].transform.position;
         Ladder_1 = Instantiate(LadderPrefab, placing, Quaternion.identity);
         return place;
@@ -123,6 +120,8 @@ public class GridGenerator : MonoBehaviour
         }
         Vector3 placing = LadderPlaces_3[place].transform.position;
         Ladder_3 = Instantiate(LadderPrefab, placing, Quaternion.identity);
+        Ladder ladderScript = Ladder_3.GetComponent<Ladder>();
+        ladderScript.SetFinalLadder();
         return place;
     }
 
@@ -150,4 +149,25 @@ public class GridGenerator : MonoBehaviour
             tile.ClearTile();
         }
     }
+    #endregion
+
+    #region Level Finished
+
+    public void TileFixed()
+    {
+        holesToFix--;
+        score.AddPointsForFixedTile();
+        if(holesToFix == 0)
+        {
+            levelManager.LevelFinished();
+        }
+    }
+
+    public void ChangeLadderState()
+    {
+        Ladder ladderScript = Ladder_3.GetComponent<Ladder>();
+        ladderScript.SetLevelDone();
+    }
+
+    #endregion
 }

@@ -6,6 +6,11 @@ public class PropScript : MonoBehaviour
     bool canHit = true;
     [SerializeField] float propLength;
     [SerializeField] float rotationSpeed;
+
+    private void Start()
+    {
+        Destroy(transform.parent.gameObject, 12f);
+    }
     void Update()
     {
         if(isRotating)
@@ -28,7 +33,6 @@ public class PropScript : MonoBehaviour
         {
             collision.TryGetComponent<PlayerHealth>(out PlayerHealth Health);
             {
-                Debug.Log("Elo");
                 Health.PlayerGotHit();
                 canHit = false;
             }

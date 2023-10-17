@@ -30,13 +30,18 @@ public class PlayerMovement : MonoBehaviour
     private bool isClimbing;
     [SerializeField]bool isDownside;
     [SerializeField]bool isUpside;
+    bool isFinalLadder;
 
     [Header("Animations")]
     SpriteRenderer spriteRenderer;
     Animator animator;
     private bool isFacingRight;
-    bool isHit = false;
+    public bool isHit = false;
+    public bool isInTransition;
     private string currentState;
+    bool isRepairing;
+
+    PlayerSound sound;
 
     public enum gravityState
     {
@@ -46,16 +51,19 @@ public class PlayerMovement : MonoBehaviour
 
     void Awake()
     {
+        Cursor.visible = false;
         Setup();
     }
 
     void Setup()
     {
+        sound = GetComponent<PlayerSound>();
         movement = BasicMovement;
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         canMove = true;
+        isFacingRight = true;
     }
 
 
@@ -65,9 +73,7 @@ public class PlayerMovement : MonoBehaviour
         X = GatherInputX();
         Y = GatherInputY();
 
-
-        if (isClimbing)
-            movement();
+        if (isClimbing && !isHit) ChangeAnimationState("Player_Climb");
 
         if (!canMove || isClimbing)
             return;
@@ -85,8 +91,8 @@ public class PlayerMovement : MonoBehaviour
             StartClimbing();
         if (isGrounded && Y < 0 && isClimbing && isDownside)
             StopClimbing();
-        if(!isClimbing)
-            movement();
+
+        movement();
         CheckCollisions();
     }
     public void SetIsHit(bool state)
@@ -97,12 +103,17 @@ public class PlayerMovement : MonoBehaviour
     {
         canMove = state;
     }
-    public void SetCanClimb(bool state, bool isdownside, bool isupside)
+    public void setIsRepairing(bool state)
+    {
+        isRepairing = state;
+    }
+    public void SetCanClimb(bool state, bool isdownside, bool isupside, bool isFinal)
     {
         if (!state)
         {
             StopClimbing();
         }
+        isFinalLadder = isFinal;
         canClimb = state;
         isDownside = isdownside;
         isUpside = isupside;
@@ -116,12 +127,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void BasicMovement()
     {
-        if (!canMove || isClimbing)
+        if (!canMove || isClimbing || isHit)
             return;
 
-        if (X != 0)
+        if (X != 0 && isGrounded && !isRepairing)
             ChangeAnimationState("Player_Run");
-        else
+        else if(X == 0 && isGrounded && !isRepairing)
             ChangeAnimationState("Player_Idle");
 
         float maxSpeed = X * playerVars.movementSpeed;
@@ -140,7 +151,7 @@ public class PlayerMovement : MonoBehaviour
     void ClimbingMovement()
     {
         Vector3 direction = new Vector2(X, Y);
-        transform.position += direction.normalized * playerVars.climbingSpeed * Time.deltaTime;
+        rb.MovePosition(transform.position + direction.normalized * playerVars.climbingSpeed);
     }
 
     void StartClimbing()
@@ -149,9 +160,7 @@ public class PlayerMovement : MonoBehaviour
         isClimbing = true;
         rb.velocity = Vector2.zero;
         SwitchGravity(gravityState.Climbing);
-        ChangeCollisionRelation(true);
-        Debug.Log("Start climbing");
-
+        ChangeCollisionRelation(!isFinalLadder);
     }
 
     void StopClimbing()
@@ -160,7 +169,7 @@ public class PlayerMovement : MonoBehaviour
         ChangeCollisionRelation(false);
         isClimbing = false;
         movement = BasicMovement;
-        Debug.Log("Stop climbing");
+        isInTransition = false;
     }
 
     void ChangeCollisionRelation(bool state)
@@ -173,16 +182,21 @@ public class PlayerMovement : MonoBehaviour
     {
         if (lastJumpPressed > 0 && isGrounded /* Jump Buffer */)
         {
-            //playerAnims.ChangeAnimationState(AnimationState.Jump_Player.ToString());
             rb.velocity = new Vector2(rb.velocity.x, 0f);
             rb.AddForce(Vector2.up * playerVars.jumpForce, ForceMode2D.Impulse);
             lastJumpPressed = 0f;
+            sound.AudioJump();
         }
     }
 
+
+
     #endregion
+
     int GatherInputX()
     {
+        if (isInTransition)
+            return 0;
         int acc = 0;
         if (Input.GetKey(KeyCode.A))
             acc = -1;
@@ -195,7 +209,7 @@ public class PlayerMovement : MonoBehaviour
         int acc = 0;
         if (Input.GetKey(KeyCode.W))
             acc = 1;
-        else if (Input.GetKey(KeyCode.S))
+        else if (Input.GetKey(KeyCode.S) && !isInTransition)
             acc = -1;
         return acc;
     }

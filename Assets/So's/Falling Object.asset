@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5463345b176e31542887f325e7bdd381, type: 3}
   m_Name: Falling Object
   m_EditorClassIdentifier: 
-  fallingSpeed: 35
+  fallingSpeed: 45

@@ -6,13 +6,9 @@ public class Tile : MonoBehaviour
     [SerializeField] List<Sprite> WallTiles;
     [SerializeField] List<Sprite> HoleTiles;
     [SerializeField] bool isHole;
+    GridGenerator grid;
+    [SerializeField] SpriteRenderer spriteRenderer;
 
-    SpriteRenderer spriteRenderer;
-
-    void Awake()
-    {
-        spriteRenderer = GetComponent<SpriteRenderer>();  
-    }
 
     // Update is called once per frame
     void Update()
@@ -20,31 +16,38 @@ public class Tile : MonoBehaviour
         
     }
 
-    public void ChangeToWallTile()
+    public void ChangeToWallTile(GridGenerator gridGenerator)
     {
         int index = Random.Range(0, WallTiles.Count);
         spriteRenderer.sprite = WallTiles[index];
+        grid = gridGenerator;
+    }
+    void ChangeToWallTile()
+    {
+        int index = Random.Range(0, 2);
+        spriteRenderer.sprite = WallTiles[index];
     }
 
-    public int ChangeToHoleTile(int holeIndex)
+    public int ChangeToHoleTile(int holeIndex, GridGenerator gridGenerator)
     {
-        int index = Random.Range(0, HoleTiles.Count);
-        spriteRenderer.sprite = HoleTiles[index];
+        int index = Random.Range(0, 3);
+        Sprite sp = HoleTiles[index];
+        spriteRenderer.sprite = sp;
         isHole = true;
+        grid = gridGenerator;
         return index;
     }
 
     public void ClearTile()
     {
         isHole = false;
-        spriteRenderer.sprite = null;
     }
 
     public void RepairTile()
     {
         isHole = false;
         ChangeToWallTile();
-        //send info to level script
+        grid.TileFixed();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

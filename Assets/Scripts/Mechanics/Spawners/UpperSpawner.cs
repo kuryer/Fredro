@@ -7,10 +7,11 @@ public class UpperSpawner : MonoBehaviour
     [Header("Spawn Variables")]
     [Range(2f, 200f)]
     [SerializeField] float SpawnAreaDistance;
+    [SerializeField] float deletionAreaDistance;
     [Range(0f, 200f)]
     [SerializeField] float gizmosRayLength;
-    [SerializeField] float TimeToSpawn;
-    [SerializeField] int spawnedPropAmount;
+    [SerializeField] public float TimeToSpawn;
+    [SerializeField] public int spawnedPropAmount;
     [Header("Delete Variables")]
     [SerializeField] LayerMask propLayer;
     [Header("Prop Variables")]
@@ -18,11 +19,11 @@ public class UpperSpawner : MonoBehaviour
     [SerializeField] int lastPropIndex;
     float lastPropLength;
     float lastPropPositionX;
+    [Header("Warning")]
+    [SerializeField] GameObject warning;
 
     private void OnEnable()
     {
-        Debug.Log("elo wczesniej");
-
         StartCoroutine(SpawnProp());
     }
 
@@ -34,18 +35,16 @@ public class UpperSpawner : MonoBehaviour
     private void FixedUpdate()
     {
         Vector2 origin = new Vector2(transform.position.x - SpawnAreaDistance, transform.position.y - gizmosRayLength);
-        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.right, SpawnAreaDistance * 2, propLayer);
+        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.left, deletionAreaDistance, propLayer);
 
         if (hit.collider != null && hit.collider.CompareTag("Prop"))
         {
-            Destroy(hit.collider.gameObject);
+            Destroy(hit.collider.gameObject.transform.parent.gameObject);
         }
     }
 
     IEnumerator SpawnProp()
     {
-        Debug.Log("elo ");
-
         while (true)
         {
             Spawn();
@@ -57,7 +56,10 @@ public class UpperSpawner : MonoBehaviour
     {
         for(int i = 0; i < spawnedPropAmount; i++)
         {
-            GameObject prop = Instantiate(props[GetPropIndex()], GetPropSpawnPosition(), Quaternion.identity);
+            Vector3 spawnPos = GetPropSpawnPosition();
+            Vector3 offset = new Vector3(0, -65, 0);
+            Instantiate(warning, spawnPos + offset, Quaternion.identity);
+            GameObject prop = Instantiate(props[GetPropIndex()], spawnPos, Quaternion.identity);
             PropScript script = prop.GetComponentInChildren<PropScript>();
             lastPropLength = script.GetLength();
         }
@@ -126,8 +128,8 @@ public class UpperSpawner : MonoBehaviour
         //Draws The Deleting Ray
         ////////////////////////
         Gizmos.color = Color.red;
-        Vector3 from = new Vector3(transform.position.x - SpawnAreaDistance, transform.position.y - gizmosRayLength, 0);
-        Vector3 to = new Vector3(transform.position.x + SpawnAreaDistance, transform.position.y - gizmosRayLength, 0);
+        Vector3 from = new Vector3(transform.position.x + deletionAreaDistance, transform.position.y - gizmosRayLength, 0);
+        Vector3 to = new Vector3(transform.position.x - deletionAreaDistance, transform.position.y - gizmosRayLength, 0);
         Gizmos.DrawLine(from, to);
     }
 
