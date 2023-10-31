@@ -53,6 +53,10 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 0131eb4ea7e457c46a5c4af0f1751b62, type: 3}
   - {fileID: 21300000, guid: 3623c57ceb8a861439406cf71630de63, type: 3}
   - {fileID: 21300000, guid: fdbb6b68f8554ce4d9eedd5ef05c7e65, type: 3}
+  HoleHighlightTiles:
+  - {fileID: 21300000, guid: 01912bed863bb4c4abb6c8a0f361362f, type: 3}
+  - {fileID: 21300000, guid: 388653dd030ad3e498dde6269c06625d, type: 3}
+  - {fileID: 21300000, guid: 97940172caa93284a95f8811e10d63c6, type: 3}
   isHole: 0
   spriteRenderer: {fileID: 7668416606225344476}
 --- !u!212 &7668416606225344476

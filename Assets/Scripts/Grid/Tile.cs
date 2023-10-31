@@ -5,16 +5,12 @@ public class Tile : MonoBehaviour
 {
     [SerializeField] List<Sprite> WallTiles;
     [SerializeField] List<Sprite> HoleTiles;
+    [SerializeField] List<Sprite> HoleHighlightTiles;
     [SerializeField] bool isHole;
+    int index;
     GridGenerator grid;
     [SerializeField] SpriteRenderer spriteRenderer;
 
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public void ChangeToWallTile(GridGenerator gridGenerator)
     {
@@ -30,12 +26,20 @@ public class Tile : MonoBehaviour
 
     public int ChangeToHoleTile(int holeIndex, GridGenerator gridGenerator)
     {
-        int index = Random.Range(0, 3);
+        index = Random.Range(0, 3);
         Sprite sp = HoleTiles[index];
         spriteRenderer.sprite = sp;
         isHole = true;
         grid = gridGenerator;
         return index;
+    }
+
+    public void SetHighlight(bool isActive)
+    {
+        if (isActive)
+            spriteRenderer.sprite = HoleHighlightTiles[index];
+        else
+            spriteRenderer.sprite = HoleTiles[index];
     }
 
     public void ClearTile()
@@ -60,6 +64,7 @@ public class Tile : MonoBehaviour
             collision.TryGetComponent<PlayerRepair>(out PlayerRepair playerRepair);
             {
                 playerRepair.SetCanRepairTile(this, true);
+                SetHighlight(true);
             }
         }
     }
@@ -74,6 +79,7 @@ public class Tile : MonoBehaviour
             collision.TryGetComponent<PlayerRepair>(out PlayerRepair playerRepair);
             {
                 playerRepair.SetCanRepairTile(this, false);
+                SetHighlight(false);
             }
         }
     }

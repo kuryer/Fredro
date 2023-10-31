@@ -16,19 +16,52 @@ public class UpperSpawner : MonoBehaviour
     [SerializeField] LayerMask propLayer;
     [Header("Prop Variables")]
     [SerializeField] List<GameObject> props;
+    [SerializeField] List<GameObject> spawnedProps;
     [SerializeField] int lastPropIndex;
     float lastPropLength;
     float lastPropPositionX;
+    [SerializeField] bool isDisabled;
+    [SerializeField] int levelNum;
     [Header("Warning")]
     [SerializeField] GameObject warning;
 
     private void OnEnable()
     {
-        StartCoroutine(SpawnProp());
+        if(levelNum == 1 && !isDisabled)
+        {
+            StartCoroutine(SpawnProp());
+            Debug.Log("started from onEnable");
+        }   
     }
 
     private void OnDisable()
     {
+        for(int i =0; i < (spawnedProps.Count-1); i++)
+        {
+            Destroy(spawnedProps[i].gameObject);
+            spawnedProps.Remove(spawnedProps[i]);
+        }
+        StopAllCoroutines();
+        isDisabled = true;
+    }
+
+    public void Enable()
+    {
+        if (isDisabled)
+        {
+            Debug.Log("started from Enable");
+            StartCoroutine(SpawnProp());
+            isDisabled = false;
+        }
+    }
+
+    public void Disable()
+    {
+        for (int i = 0; i < (spawnedProps.Count); )
+        {
+            Destroy(spawnedProps[i].gameObject);
+            spawnedProps.Remove(spawnedProps[i]);
+        }
         StopAllCoroutines();
     }
 
@@ -62,6 +95,7 @@ public class UpperSpawner : MonoBehaviour
             GameObject prop = Instantiate(props[GetPropIndex()], spawnPos, Quaternion.identity);
             PropScript script = prop.GetComponentInChildren<PropScript>();
             lastPropLength = script.GetLength();
+            spawnedProps.Add(prop);
         }
     }
 

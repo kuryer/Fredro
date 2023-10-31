@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class GridGenerator : MonoBehaviour
 {
-
     [SerializeField] List<Tile> InvalidTiles;
     [SerializeField] List<Tile> ValidTiles;
 

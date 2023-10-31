@@ -38,6 +38,7 @@ public class LevelManager : MonoBehaviour
     public void ActivateLevel()
     {
         SpawnersCollection.SetActive(true);
+        upperSpawnerScript.Enable();
         if(actualLevel > 0)
         {
             Debug.Log("Upgraded");
@@ -52,6 +53,7 @@ public class LevelManager : MonoBehaviour
     public void DeactivateLevel()
     {
         SpawnersCollection.SetActive(false);
+        upperSpawnerScript.Disable();
     }
 
     public void MoveUp()

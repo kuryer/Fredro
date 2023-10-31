@@ -13,7 +13,7 @@ public class PlayerSound : MonoBehaviour
     }
     public void AudioGotHit()
     {
-        manager.Play("Player_GotHit");
+        manager.Play("Player_GotHitFixed");
     }
     public void AudioRepair()
     {

@@ -21,11 +21,11 @@ public class PlayerHealth : MonoBehaviour
         if (isHit)
             return;
         hp--;
-        LoseHeart();
-        playerMovement.PlayerGotHit();
+        LoseHeartUI();
+        playerMovement.PlayerHit();
     }
 
-    void LoseHeart()
+    void LoseHeartUI()
     {
         if(hp == 2)
             Health_3.SetActive(false);

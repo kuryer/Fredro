@@ -231,7 +231,7 @@ public class PlayerMovement : MonoBehaviour
 
     #region Hit
 
-    public void PlayerGotHit()
+    public void PlayerHit()
     {
         SetIsHit(true);
         SetCanMove(false);
