@@ -161,5 +161,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isRotating: 1
-  propLength: 3
+  propLength: 8
   rotationSpeed: -150

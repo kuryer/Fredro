@@ -1,10 +1,13 @@
+using System.Collections;
 using UnityEngine;
 
 public class PlayerRepair : MonoBehaviour
 {
     [SerializeField] bool canRepair;
     [SerializeField] Tile repairedTile;
+    [SerializeField] float fixDelay;
     PlayerMovement movementScript;
+    PlayerSound sound;
     Animator animator;
     public enum State
     {
@@ -14,6 +17,7 @@ public class PlayerRepair : MonoBehaviour
     State actualState;
     private void Awake()
     {
+        sound = GetComponent<PlayerSound>();
         actualState = State.not;
         movementScript = GetComponent<PlayerMovement>();
         animator = GetComponent<Animator>();
@@ -24,13 +28,14 @@ public class PlayerRepair : MonoBehaviour
         if(movementScript.isHit && actualState == State.repairing)
         {
             //movementScript.SetCanMove(true);
+            movementScript.setIsRepairing(false);
             actualState = State.not;
         }
 
         if (Input.GetKeyUp(KeyCode.E) && actualState == State.repairing)
         {
             movementScript.ChangeAnimationState("Player_Idle");
-            movementScript.SetCanMove(true);
+            movementScript.setIsRepairing(false);
             actualState = State.not;
         }
 
@@ -41,7 +46,7 @@ public class PlayerRepair : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E) && actualState == State.not && !movementScript.isHit)
         {
             movementScript.ChangeAnimationState("Player_Repairing");
-            movementScript.SetCanMove(false);
+            movementScript.setIsRepairing(true);
             actualState = State.repairing;
         }
 
@@ -53,11 +58,16 @@ public class PlayerRepair : MonoBehaviour
         repairedTile = tile;
     }
 
-
     public void RepairTile()
     {
+        sound.AudioRepair();
+        StartCoroutine(FixTile());
+    }
+    IEnumerator FixTile()
+    {
+        yield return new WaitForSeconds(fixDelay);
         repairedTile.RepairTile();
-        movementScript.SetCanMove(true);
+        movementScript.setIsRepairing(false);
         animator.Play("Player_Idle");
         canRepair = false;
     }

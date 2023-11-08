@@ -130,9 +130,9 @@ public class PlayerMovement : MonoBehaviour
         if (!canMove || isClimbing || isHit)
             return;
 
-        if (X != 0 && isGrounded && !isRepairing)
+        if (X != 0 && rb.velocity.y <= 0f && isGrounded && !isRepairing)
             ChangeAnimationState("Player_Run");
-        else if(X == 0 && isGrounded && !isRepairing)
+        else if(X == 0 && rb.velocity.y <= 0f && isGrounded && !isRepairing)
             ChangeAnimationState("Player_Idle");
 
         float maxSpeed = X * playerVars.movementSpeed;
@@ -186,6 +186,8 @@ public class PlayerMovement : MonoBehaviour
             rb.AddForce(Vector2.up * playerVars.jumpForce, ForceMode2D.Impulse);
             lastJumpPressed = 0f;
             sound.AudioJump();
+            Debug.Log("jump man");
+            ChangeAnimationState("Player_Jump");
         }
     }
 
@@ -195,7 +197,7 @@ public class PlayerMovement : MonoBehaviour
 
     int GatherInputX()
     {
-        if (isInTransition)
+        if (isInTransition || isRepairing)
             return 0;
         int acc = 0;
         if (Input.GetKey(KeyCode.A))
@@ -246,8 +248,6 @@ public class PlayerMovement : MonoBehaviour
 
     void DetectSideOfAnimation()
     {
-
-
         if (X < 0f && isFacingRight)
         {
             isFacingRight = false;
@@ -263,7 +263,7 @@ public class PlayerMovement : MonoBehaviour
     public void ChangeAnimationState(string newState)
     {
         if (currentState == newState) return;
-
+        Debug.Log("Changed to" + newState);
         animator.Play(newState);
         currentState = newState;
     }

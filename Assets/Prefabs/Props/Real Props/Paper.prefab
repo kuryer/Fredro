@@ -132,7 +132,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isRotating: 1
-  propLength: 9
+  propLength: 14
   rotationSpeed: -150
 --- !u!1 &4479610138845220777
 GameObject:

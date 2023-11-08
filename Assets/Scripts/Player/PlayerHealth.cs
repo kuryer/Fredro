@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
@@ -34,7 +33,7 @@ public class PlayerHealth : MonoBehaviour
         if (hp == 0)
         {
             Health_1.SetActive(false);
-            //levelLoader.GameOver();
+            StartCoroutine(PlayerDies());
         }
     }
 
@@ -43,10 +42,10 @@ public class PlayerHealth : MonoBehaviour
         playerMovement.SetCanMove(true);
     }
 
-    public void PlayerDies()
+    private IEnumerator PlayerDies()
     {
-        if (hp == 0)
-            levelLoader.GameOver();
+        yield return new WaitForSeconds(0.4f);
+        levelLoader.GameOver();
     }
 
     public void IsHitTrue()

@@ -35,7 +35,7 @@ AnimationClip:
       value: {fileID: -115962665, guid: e76c0b0bc47e168448cc6f64090e6657, type: 3}
     - time: 0.45
       value: {fileID: 1518613453, guid: e76c0b0bc47e168448cc6f64090e6657, type: 3}
-    - time: 0.51666665
+    - time: 0.6166667
       value: {fileID: 695176684, guid: e76c0b0bc47e168448cc6f64090e6657, type: 3}
     attribute: m_Sprite
     path: 
@@ -70,7 +70,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.5333333
+    m_StopTime: 0.6333333
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -99,13 +99,6 @@ AnimationClip:
     messageOptions: 0
   - time: 0.21666667
     functionName: PlayerConcious
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.46666667
-    functionName: PlayerDies
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
