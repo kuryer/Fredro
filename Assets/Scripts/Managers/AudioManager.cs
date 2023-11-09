@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -43,6 +45,34 @@ public class AudioManager : MonoBehaviour
     {
         Sound s = Array.Find(sounds, sound => sound.name == name);
         s.source.Stop();
+    }
+    public IEnumerator FadeOut(string name, float duration)
+    {
+        Sound s = Array.Find(sounds, sound => sound.name == name);
+        s.source.Play();
+        float time = 0f;
+        float startVolume = s.volume;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            s.volume = Mathf.Lerp(startVolume, 0f, time/duration);
+            yield return null;
+        }
+        yield break;
+    }
+
+    public IEnumerator FadeIn(string name, float duration)
+    {
+        Sound s = Array.Find(sounds, sound => sound.name == name);
+        float time = 0f;
+        float startVolume = s.volume;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            s.volume = Mathf.Lerp(0f, 1f, time / duration);
+            yield return null;
+        }
+        yield break;
     }
 }
 

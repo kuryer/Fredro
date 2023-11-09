@@ -3,6 +3,7 @@ using UnityEngine;
 public static class Helpers
 {
     private static PlayerAnimation playerAnimation;
+    private static AudioManager audioManager;
 
     public static PlayerAnimation PlayerAnimation
     {
@@ -12,4 +13,14 @@ public static class Helpers
             return playerAnimation;
         }
     }
+    
+    public static AudioManager AudioManager
+    {
+        get
+        {
+            if(audioManager == null) audioManager = GameObject.FindGameObjectWithTag("Audio Manager").GetComponent<AudioManager>();
+            return audioManager;
+        }
+    }
+
 }

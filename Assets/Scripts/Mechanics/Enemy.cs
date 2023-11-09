@@ -8,12 +8,15 @@ public class Enemy : MonoBehaviour
     [SerializeField] Vector3 groundOffset;
     [SerializeField] LayerMask playerLayer;
     [SerializeField] LayerMask groundLayer;
+    [SerializeField] AudioManager audioManager;
     bool canHit;
     bool isGrounded;
 
     private void Awake()
     {
         canHit = true;
+        audioManager = Helpers.AudioManager;
+        StartCoroutine(audioManager.FadeIn("Enemy_Walk", 2f));
         Destroy(transform.parent.gameObject, 12f);
         Physics2D.IgnoreLayerCollision(7, 8, true);
     }
